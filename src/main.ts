@@ -1,9 +1,17 @@
-import { createApp } from "vue";
-import App from "@/App.vue";
+// 导出环境无关的（通用的）应用代码
+
+import { createSSRApp } from "vue";
 import { createMyRouter } from '@/router/index'
+import { createPinia } from 'pinia'
+import App from "@/App.vue";
 import "@/assets/base.css";
 
-
-const app = createApp(App);
-app.use(createMyRouter());
-app.mount("#app");
+// 每次请求，SSR 都会请求一个新的 app 实例，因此必须导出一个函数
+export function createApp() {
+    const app = createSSRApp(App);
+    const router = createMyRouter();
+    const pinia = createPinia();
+    app.use(router);
+    app.use(pinia)
+    return { app, router, pinia }
+}
